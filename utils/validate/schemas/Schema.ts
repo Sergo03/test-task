@@ -1,4 +1,5 @@
-const Joi = require("joi");
+// const Joi = require("joi");
+import Joi from "joi"
 
 const schemaSignupValidate = Joi.object({
     email: Joi.string().email().required(),
@@ -7,6 +8,8 @@ const schemaSignupValidate = Joi.object({
     surname:Joi.string().min(2).required()
 })
 
-module.exports = {
-   schemaSignupValidate
-}
+export default schemaSignupValidate
+
+// module.exports = {
+//    schemaSignupValidate
+// }

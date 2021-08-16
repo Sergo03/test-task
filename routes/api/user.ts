@@ -5,9 +5,11 @@ const jimp = require('jimp')
 const path = require("path");
 const fs = require("fs/promises");
 require("dotenv").config();
-const User = require('../../model');
+// const User = require('../../model');
+import User from '../../model';
 const moment = require('moment');
-const { schemaSignupValidate } = require('../../utils/validate/schemas/Schema');
+// const { schemaSignupValidate } = require('../../utils/validate/schemas/Schema');
+import { schemaSignupValidate } from '../../utils/validate/schemas/Schema';
 
 
 const uploadDir = `${process.cwd()}/avatars`
@@ -68,7 +70,8 @@ router.post('/signup', uploadMiddleware.single('avatar'), async (req, res, next)
     const fullFileName = path.join(uploadDir, fileName);
     
     try {
-        const { error } = schemaSignupValidate.validate({ email, password,name,surname });
+        const { error } = schemaSignupValidate.validate({ email, password, name, surname } );
+       
         if (error) {
             return res.status(400).json({
                 Status: '400 Bad Request',
@@ -76,7 +79,7 @@ router.post('/signup', uploadMiddleware.single('avatar'), async (req, res, next)
                 ResponseBody: 'Ошибка от Joi или другой библиотеки валидации'
             })
         }
-        const result = await User.getOne({ email })
+        const result = await User.getOne({ email } )
         if (result) {
             return res.status(409).json({
                 Status: '409 conflict',
@@ -96,7 +99,7 @@ router.post('/signup', uploadMiddleware.single('avatar'), async (req, res, next)
                 console.log(error);
             });
         
-        const newUser = await User.add({ email, password, name, surname, avatarURL: avatarURL });
+        const newUser = await User.add({ email, password, name, surname, avatarURL } );
 
         res.status(201).json({
             Status: '201 Created',
@@ -114,5 +117,6 @@ router.post('/signup', uploadMiddleware.single('avatar'), async (req, res, next)
 })
 
 
+export default router;
 
-module.exports = router;
+// module.exports = router;

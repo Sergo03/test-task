@@ -1,6 +1,10 @@
 const { Schema } = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+// import { Schema } from 'mongoose';
+// import bcrypt from 'bcryptjs';
+
+
 const userSchema = Schema({
     password: {
         type: String,
@@ -32,4 +36,5 @@ userSchema.methods.comparePassword = function (password) {
       return bcrypt.compareSync(password, this.password);
 }
 
-module.exports = userSchema;
+// module.exports = userSchema;
+export default userSchema
