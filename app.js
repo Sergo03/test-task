@@ -1,11 +1,9 @@
 const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
-
 require("dotenv").config();
 const userRouter = require('./routes/api/user');
-const authenticate = require('./middlewares/authenticate')
-const User = require('./model');
+
 
 const app = express()
 
@@ -19,7 +17,8 @@ app.use(express.json())
 
 app.use('/api/users', userRouter);
 
-const uploadDir = `${__dirname}/routes/api/avatars`;
+const uploadDir = `${process.cwd()}/avatars`
+
 app.use('/avatars', express.static(uploadDir));
 
 

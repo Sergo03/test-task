@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const jimp = require('jimp')
 const path = require("path");
 const fs = require("fs/promises");
 require("dotenv").config();
 const User = require('../../model');
-const { v4 } = require('uuid');
 const moment = require('moment');
 const { schemaSignupValidate } = require('../../utils/validate/schemas/Schema');
-const authenticate = require('../../middlewares/authenticate');
 
 
-const uploadDir=`${process.cwd()}/avatars`
+const uploadDir = `${process.cwd()}/avatars`
+
 const tempDir = path.join(process.cwd(), "tmp");
 
 const storage = multer.diskStorage({
@@ -24,7 +22,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     },
     limits: {
-        fileSize: 100000
+        fileSize: 1000000
     }
 })
 const uploadMiddleware = multer({
@@ -46,7 +44,13 @@ router.get('/:userId', async (req, res, next) => {
         return res.status(200).json({
             Status: '200 success',
             'Content-Type': 'application / json',
-            ResponseBody: {user}
+            ResponseBody: {
+                id:user.id,
+                email: user.email,
+                name: user.name,
+                surname: user.surname,
+                avatarURL:user.avatarURL
+            }
         })
         
     } catch (error) {
@@ -55,16 +59,16 @@ router.get('/:userId', async (req, res, next) => {
 })
 
 router.post('/signup', uploadMiddleware.single('avatar'), async (req, res, next) => {
-    const { email, password,name,surname } = req.body
+    const { email, password, name, surname } = req.body
     const { path: tempName, originalname } = req.file;
     
     const now = moment().format("YYYY-MM-DD_hh-mm-ss");
     const fileName = `${now}_${originalname}`;
     const avatarURL = `${req.headers.host}/avatars/${fileName}`
     const fullFileName = path.join(uploadDir, fileName);
-
+    
     try {
-        const { error } = schemaSignupValidate.validate({ email, password });
+        const { error } = schemaSignupValidate.validate({ email, password,name,surname });
         if (error) {
             return res.status(400).json({
                 Status: '400 Bad Request',
@@ -82,11 +86,10 @@ router.post('/signup', uploadMiddleware.single('avatar'), async (req, res, next)
                 }
             })
         }
-
         await fs.rename(tempName, fullFileName);
         jimp.read(fullFileName)
             .then(img => {
-                return img.resize(200, 200)
+                return img.cover(200, 200, jimp.HORIZONTAL_ALIGN_CENTER | jimp.VERTICAL_ALIGN_MIDDLE)
                     .writeAsync(fullFileName)
             })
             .catch(error => {

@@ -12,14 +12,9 @@ const add = ({ email, password,name,surname,avatarURL }) => {
 
 const getById = (id) => User.findById(id);
 
-const updateById = async (id, updateInfo) => {
-    const result = await User.findByIdAndUpdate(id, updateInfo, { new: true });
-    return result;
-};
 
 module.exports = {
   getOne,
   add,
   getById,
-  updateById
 }

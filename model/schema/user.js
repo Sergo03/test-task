@@ -19,10 +19,6 @@ const userSchema = Schema({
         type: String,
         required: [true, 'Surname is required']
     },
-    token: {
-        type: String,
-        default: null,
-    },
     avatarURL: {
         type: String,
     },
